@@ -4,10 +4,17 @@
 # list_character_counts.sh
 #
 
-while read -r F ; do
-	C="$(< "$F" perl -p0e 's/[\W\w]*<body>//g;s/\t|<[^<>]+>//g;s/\n/ /g' \
+count(){
+	< "$1" perl -p0e 's/[\W\w]*<body>//g;s/\t|<[^<>]+>//g;s/\n/ /g' \
 	| perl -pe 's/ +/ /g' \
-	| wc -m)"
+	| wc -m
+}
+if [ -f "$1" ] ; then
+	count "$1"
+	exit
+fi
+while read -r F ; do
+	C="$( count "$F")"
 	echo -e "$C\t$F"
 done < <(find . -iname '*.html' | grep -v 'index')
 
